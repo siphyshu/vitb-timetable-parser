@@ -1,1 +1,1 @@
-# vit-timetable-parser
+# vitb-timetable-parser
