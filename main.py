@@ -237,7 +237,7 @@ def extract_text_from_cells(cells, grid):
     return dataframe
 
 
-def parse_timetable(image_path):
+def parse_timetable(image_path = None, image = None):
     """
     Process an image and extract text from the grid.
 
@@ -248,9 +248,20 @@ def parse_timetable(image_path):
     - Extracted text as a pandas DataFrame.
 
     """
-    image = cv2.imread(image_path)
-    if image is None:
-        raise ValueError("Failed to load image from path:", image_path)
+    if image_path is None and image is None:
+        raise ValueError("Please provide an image path or image data.")
+    elif image is not None and image_path is not None:
+        raise ValueError("Please provide only one of image path or image data.")
+    elif image is not None and image_path is None:
+        image = cv2.imdecode(np.fromstring(image.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+    elif image is None:
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError("Failed to load image from path:", image_path)
+
+    # image = cv2.imread(image_path)
+    # if image is None:
+    #     raise ValueError("Failed to load image from path:", image_path)
 
     gray, image_thresh = preprocess_image(image)
     grid = find_grid(image_thresh)
