@@ -1,5 +1,6 @@
 import os
 import cv2
+import time
 import pytesseract
 import numpy as np
 import pandas as pd
@@ -197,13 +198,14 @@ def extract_cells_from_grid(grid_vh):
     return cells
 
 
-def extract_text_from_cells(cells, grid):
+def extract_text_from_cells(cells, grid, progress_callback=None):
     """
     Extract text from each cell in the grid.
 
     Args:
     - cells: List of boxes containing cell coordinates.
     - grid: Image data (must be grayscale) with grid lines.
+    - progress_callback: Callback function to track progress.
 
     Returns:
     - Extracted text as a pandas DataFrame.
@@ -211,6 +213,9 @@ def extract_text_from_cells(cells, grid):
     """
 
     outer = []
+    total_cells = len(cells) * len(cells[0])
+    current_cell = 0
+
     for i in range(len(cells)):
         for j in range(len(cells[i])):
             inner = ""
@@ -230,6 +235,12 @@ def extract_text_from_cells(cells, grid):
                     if len(out) == 0:
                         out = pytesseract.image_to_string(erosion, config='--psm 3')
                     inner = inner + " " + out
+
+                    current_cell += 1
+                    if progress_callback is not None:
+                        progress = int(45 + (current_cell / total_cells) * 55)
+                        progress_callback(progress)
+
                 outer.append(inner.strip())
 
     arr = np.array(outer)
@@ -237,12 +248,14 @@ def extract_text_from_cells(cells, grid):
     return dataframe
 
 
-def parse_timetable(image_path = None, image = None):
+def parse_timetable(image_path = None, image = None, progress_callback = None):
     """
     Process an image and extract text from the grid.
 
     Args:
     - image_path: File path of the input image.
+    - image: Image data as a NumPy array.
+    - progress_callback: Callback function to track progress.
 
     Returns:
     - Extracted text as a pandas DataFrame.
@@ -263,11 +276,24 @@ def parse_timetable(image_path = None, image = None):
     # if image is None:
     #     raise ValueError("Failed to load image from path:", image_path)
 
-    gray, image_thresh = preprocess_image(image)
-    grid = find_grid(image_thresh)
-    cells = extract_cells_from_grid(grid)
-    grid = xor_and_not_grid(gray, grid)
-    extracted_text = extract_text_from_cells(cells, grid)
+    if progress_callback is not None:
+        progress_callback(0)
+        time.sleep(0.05)
+        gray, image_thresh = preprocess_image(image)
+        progress_callback(15)
+        grid = find_grid(image_thresh)
+        progress_callback(30)
+        cells = extract_cells_from_grid(grid)
+        progress_callback(45)
+        grid = xor_and_not_grid(gray, grid)
+        extracted_text = extract_text_from_cells(cells, grid, progress_callback)
+        progress_callback(100)
+    else:
+        gray, image_thresh = preprocess_image(image)
+        grid = find_grid(image_thresh)
+        cells = extract_cells_from_grid(grid)
+        grid = xor_and_not_grid(gray, grid)
+        extracted_text = extract_text_from_cells(cells, grid)
     
     return extracted_text
 
