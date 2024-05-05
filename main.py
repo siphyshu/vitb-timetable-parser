@@ -1,10 +1,12 @@
 import os
 import cv2
 import time
+import json
 import pytesseract
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from utils import convert_timetable_to_json
 
 def display_image(im):
     """
@@ -272,10 +274,6 @@ def parse_timetable(image_path = None, image = None, progress_callback = None):
         if image is None:
             raise ValueError("Failed to load image from path:", image_path)
 
-    # image = cv2.imread(image_path)
-    # if image is None:
-    #     raise ValueError("Failed to load image from path:", image_path)
-
     if progress_callback is not None:
         progress_callback(0)
         time.sleep(0.05)
@@ -286,19 +284,23 @@ def parse_timetable(image_path = None, image = None, progress_callback = None):
         cells = extract_cells_from_grid(grid)
         progress_callback(45)
         grid = xor_and_not_grid(gray, grid)
-        extracted_text = extract_text_from_cells(cells, grid, progress_callback)
+        timetable = extract_text_from_cells(cells, grid, progress_callback)
         progress_callback(100)
     else:
         gray, image_thresh = preprocess_image(image)
         grid = find_grid(image_thresh)
         cells = extract_cells_from_grid(grid)
         grid = xor_and_not_grid(gray, grid)
-        extracted_text = extract_text_from_cells(cells, grid)
+        timetable = extract_text_from_cells(cells, grid)
     
-    return extracted_text
+    return timetable
 
 if __name__ == "__main__":
-    # Example usage
-    image_path = "./dataset/timetable1.png"
-    result_df = parse_timetable(image_path)
-    print(result_df)
+    timetable_path = "./dataset/timetable3.png"
+    timetable = parse_timetable(timetable_path)
+    print(timetable)
+    try:
+        timetable_json = convert_timetable_to_json(timetable)
+        print(timetable_json)
+    except ValueError:
+        print("Failed to convert timetable to JSON format.")
