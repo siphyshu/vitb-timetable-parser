@@ -24,8 +24,7 @@ def main():
     st.markdown("""This is a demo web app that parses vitb timetables images to json/csv using [vitb-timetable-parser](https://github.com/siphyshu/vitb-timetable-parser).""")
     st.divider()
 
-    # File upload
-    uploaded_file = st.file_uploader("Upload your timetable", type=["png", "jpeg"], accept_multiple_files=False)
+    uploaded_file = st.file_uploader("Upload your timetable", type=["png", "jpeg"], accept_multiple_files=False, help="Upload a clear and high-quality __screenshot__ of the timetable. Make sure the timetable is not cropped or rotated.")
 
     if uploaded_file is not None:
         # Display uploaded image
