@@ -3,6 +3,10 @@ import base64
 from ocr import parse_timetable
 from utils import tt2json
 
+st.set_page_config(
+    page_title = "VITB Timetable Parser - Parse VITB timetable screenshots to csv/json",
+    page_icon = "🔎",
+)
 
 def main():
     st.title("vitb-timetable-parser")
