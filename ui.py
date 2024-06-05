@@ -1,6 +1,6 @@
 import streamlit as st
 import base64
-from main import parse_timetable
+from ocr import parse_timetable
 from utils import convert_timetable_to_json
 
 
