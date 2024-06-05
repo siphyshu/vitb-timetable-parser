@@ -6,7 +6,7 @@ import pytesseract
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils import convert_timetable_to_json
+from utils import tt2json
 
 def display_image(im):
     """
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     timetable = parse_timetable(timetable_path)
     print(timetable)
     try:
-        timetable_json = convert_timetable_to_json(timetable)
+        timetable_json = tt2json(timetable)
         print(timetable_json)
     except ValueError:
         print("Failed to convert timetable to JSON format.")

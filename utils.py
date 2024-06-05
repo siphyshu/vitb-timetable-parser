@@ -27,7 +27,7 @@ def parse_cell_info(cell_data):
     return None, None, None, None
 
 
-def convert_timetable_to_json(timetable):
+def tt2json(timetable):
     """
     Convert timetable data to JSON format.
 

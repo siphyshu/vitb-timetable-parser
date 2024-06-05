@@ -1,7 +1,7 @@
 import streamlit as st
 import base64
 from ocr import parse_timetable
-from utils import convert_timetable_to_json
+from utils import tt2json
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
         
         try: 
             # Convert timetable to JSON
-            timetable_json = convert_timetable_to_json(parsed_timetable)
+            timetable_json = tt2json(parsed_timetable)
         except ValueError as e:
             # Add error message to status container
             status_container2.error("Failed to convert timetable to JSON format.")
